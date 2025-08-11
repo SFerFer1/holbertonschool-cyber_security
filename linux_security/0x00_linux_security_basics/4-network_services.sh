@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo ss -tunlpa
+sudo netstat -tunlpa
