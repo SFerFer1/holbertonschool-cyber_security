@@ -1,2 +1,2 @@
 #!/bin/bash
-ss -tap
+sudo ss -tap
