@@ -1,2 +1,2 @@
 #!/bin/bash
-iptables -A INPUT -P tcp -dport 80 -j ACCEPT
+sudo iptables -A INPUT -P tcp -dport 80 -j ACCEPT
