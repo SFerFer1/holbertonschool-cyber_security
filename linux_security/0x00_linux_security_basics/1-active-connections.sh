@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo netstat -taupn
+sudo ss -taupn
