@@ -1,1 +1,1 @@
-ip.src == 127.0.0.1 and ip.dst == 127.0.0.1  and tcp.flags.syn == 1 and tcp.window_size > 1024
+ip.src == 127.0.0.1 and ip.dst == 127.0.0.1  and tcp.flags.syn == 1 and tcp.window_size > 1024 and tcp.flags.ack == 0
