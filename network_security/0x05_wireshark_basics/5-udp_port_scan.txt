@@ -1,1 +1,1 @@
-ip.src == 127.0.0.1 and ip.dst == 127.0.0.1 and udp.length == 0 and icmp.type == 3
+ip.src == 127.0.0.1 and ip.dst == 127.0.0.1 and udp.length == 0 and icmp.code == 3
