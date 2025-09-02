@@ -1,1 +1,1 @@
-ip.src == 127.0.0.1 and ip.dst == 127.0.0.1
+arp.dst.hw_mac
