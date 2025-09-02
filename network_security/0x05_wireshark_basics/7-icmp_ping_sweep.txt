@@ -1,1 +1,1 @@
-ip.src == 127.0.0.1 and ip.dst == 127.0.0.1 and icmp.type == 8 
+ip.src == 127.0.0.1 and ip.dst == 127.0.0.1 and icmp.type == 8 or icmp.type == 0
