@@ -7,23 +7,18 @@ fi
 
 input="${1#\{xor\}}"
 
-
-decoded=$(printf '%s' "$input" | base64 -d -w 0)
-
-
 key=95
 
+hex_decoded=$(printf '%s' "$input" | base64 -d -w 0 | xxd -p -c 256)
 
-for (( i=0; i<${#decoded}; i++ )); do
+for (( i=0; i<${#hex_decoded}; i+=2 )); do
+    hex_byte="${hex_decoded:$i:2}"
     
-    byte_value=$(printf '%d' "'${decoded:$i:1}")
-
+    byte_value=$((16#$hex_byte))
     
     xor_result=$(( byte_value ^ key ))
-
-
+    
     printf '\\x%02x' "$xor_result"
 done
-
 
 echo
