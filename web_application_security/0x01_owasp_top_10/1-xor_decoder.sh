@@ -6,18 +6,17 @@ if [ -z "$1" ]; then
 fi
 
 input="${1#\{xor\}}"
-
 key=95
 
-hex_decoded=$(printf '%s' "$input" | base64 -d -w 0 | xxd -p -c 256)
 
-for (( i=0; i<${#hex_decoded}; i+=2 )); do
-    hex_byte="${hex_decoded:$i:2}"
+printf '%s' "$input" | base64 -d -w 0 | while IFS= read -r -n 1 byte; do
+
+    byte_value=$(printf '%d' "'$byte")
     
-    byte_value=$((16#$hex_byte))
-    
+ 
     xor_result=$(( byte_value ^ key ))
     
+
     printf '\\x%02x' "$xor_result"
 done
 
