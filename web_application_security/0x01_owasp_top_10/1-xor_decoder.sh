@@ -6,18 +6,16 @@ if [ -z "$1" ]; then
 fi
 
 input="${1#\{xor\}}"
+
+decoded=$(printf '%s' "$input" | base64 -d)
+
 key=95
 
-
-printf '%s' "$input" | base64 -d -w 0 | while IFS= read -r -n 1 byte; do
-
-    byte_value=$(printf '%d' "'$byte")
-    
- 
-    xor_result=$(( byte_value ^ key ))
-    
-
-    printf '\\x%02x' "$xor_result"
+escapes=""
+for (( i=0; i<${#decoded}; i++ )); do
+    byte=$(printf '%d' "'${decoded:$i:1}")
+    xr=$(( byte ^ key ))
+    escapes+=$(printf '\\x%02x' "$xr")
 done
 
-echo
+printf '%b\n' "$escapes"
