@@ -7,15 +7,23 @@ fi
 
 input="${1#\{xor\}}"
 
-decoded=$(printf '%s' "$input" | base64 -d)
+
+decoded=$(printf '%s' "$input" | base64 -d -w 0)
+
 
 key=95
 
-escapes=""
+
 for (( i=0; i<${#decoded}; i++ )); do
-    byte=$(printf '%d' "'${decoded:$i:1}")
-    xr=$(( byte ^ key ))
-    escapes+=$(printf '\\x%02x' "$xr")
+    
+    byte_value=$(printf '%d' "'${decoded:$i:1}")
+
+    
+    xor_result=$(( byte_value ^ key ))
+
+
+    printf '\\x%02x' "$xor_result"
 done
 
-printf '%b' "$escapes"
+
+echo
