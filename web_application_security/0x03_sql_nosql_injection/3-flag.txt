@@ -1,1 +1,1 @@
-lab-example-123
+FLAG{lab-example-123}
