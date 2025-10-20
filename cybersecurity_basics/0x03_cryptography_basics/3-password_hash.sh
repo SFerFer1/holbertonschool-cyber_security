@@ -1,2 +1,4 @@
 #!/bin/bash
-openssl rand -hex 16 | sha512sum | cut -d ' ' -f 1 > 3_hash.txt
+SALT=$(openssl rand -hex 16)
+a="${openssl rand -hex 16}${1}"
+echo -n "${a}" | sha512sum  > 3_hash.txt
