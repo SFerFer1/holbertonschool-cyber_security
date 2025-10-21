@@ -1,2 +1,2 @@
 #!/bin/bash
-echo $(sestatus)
+sestatus | grep "SE Linux status:"
