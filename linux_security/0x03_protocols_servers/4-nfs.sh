@@ -1,2 +1,2 @@
 #!/bin/bash
-nmap -p 111,2049 --open 
+showmount -e 192.168.1.10
