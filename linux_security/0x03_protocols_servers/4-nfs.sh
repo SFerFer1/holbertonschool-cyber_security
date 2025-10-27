@@ -1,2 +1,2 @@
 #!/bin/bash
-showmount -e 192.168.1.10
+showmount -e $1
