@@ -1,2 +1,2 @@
 #!/bin/bash
-sudo nmap -sW -p20-24,29-30 $1
+sudo nmap -sW -sA -p20-24,29-30 $1
