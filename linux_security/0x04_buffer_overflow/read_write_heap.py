@@ -13,9 +13,7 @@ def main():
     replace = sys.argv[3].encode("ascii")   # Texto de reemplazo convertido en bytes
 
     # Ambos textos deben tener la misma longitud para escribir sin romper memoria
-    if len(search) != len(replace):
-        print("Error: los textos deben tener la misma longitud.")
-        sys.exit(1)
+
 
     heap_start = None
     heap_end = None
