@@ -9,7 +9,7 @@ import sys
 def main():
     """
     Función principal del script.
-    Lee el PID, el texto a buscar y el texto de reemplazo desde la línea
+    Lee el PD, el texto a buscar y el texto de reemplazo desde la línea
     de comandos, localiza la región heap en /proc/<pid>/maps, busca la
     cadena en /proc/<pid>/mem y la reemplaza si existe.
     """
