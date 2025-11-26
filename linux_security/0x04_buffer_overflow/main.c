@@ -1,12 +1,12 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
 /**
- * main - uses strdup to create a new string, loops forever-ever
+ * main - uses strdup to create a new string, loops forever
  *
- * Return: EXIT_FAILURE if malloc failed. Other never returns
+ * Return: EXIT_FAILURE if malloc failed. Otherwise never returns
  */
 int main(void)
 {
@@ -16,9 +16,10 @@ int main(void)
     s = strdup("Holberton");
     if (s == NULL)
     {
-        fprintf(stderr, "Can't allocate mem with malloc\n");
+        fprintf(stderr, "Can't allocate memory with malloc\n");
         return (EXIT_FAILURE);
     }
+
     i = 0;
     while (s)
     {
@@ -26,5 +27,6 @@ int main(void)
         sleep(1);
         i++;
     }
+
     return (EXIT_SUCCESS);
 }
