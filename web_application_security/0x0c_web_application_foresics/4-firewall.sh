@@ -1,2 +1,2 @@
 #!/bin/bash
-grep -Ei "ufw allow|iptables -A" auth.log | wc -l
+grep -Ei "iptables -A" auth.log | wc -l
