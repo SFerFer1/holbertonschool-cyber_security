@@ -1,2 +1,2 @@
 #!/bin/bash
-grep -EiR "Accepted password|Accepted publickey" /var/log/
+grep -Ei "failed|invalid|authentication|accepted" /var/log/| awk '{print $NF}' | sort -u
