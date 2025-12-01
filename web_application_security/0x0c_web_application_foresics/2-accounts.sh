@@ -1,2 +1,2 @@
 #!/bin/bash
-grep -i "Accepted" auth.log | awk '{print $4}' | sort -u
+grep -i "Accepted password" auth.log | sed -n 's/.*for \([^ ]*\).*/\1/p'
