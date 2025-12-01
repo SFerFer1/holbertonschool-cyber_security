@@ -1,2 +1,2 @@
 #!/bin/bash
-grep -i "Accepted password" auth.log | awk '{print $11}' | sort -u | wc -l
+grep -RoiE "Accepted password" /var/log/ | awk '{print $NF}'| sort -u| wc -l
