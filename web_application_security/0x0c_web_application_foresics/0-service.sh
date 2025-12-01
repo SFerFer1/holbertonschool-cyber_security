@@ -1,2 +1,2 @@
 #!/bin/bash
-grep -oE '\w+' /var/log/auth.log | sort | uniq -c | sort -nr
+grep -i "ssh" /var/log/auth.log | grep -oE '\w+' | sort | uniq -c | sort -nr
