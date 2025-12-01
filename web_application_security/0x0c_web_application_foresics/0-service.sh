@@ -1,2 +1,2 @@
 #!/bin/bash
-grep -Ri "ssh" /var/log/
+grep -RiE "ssh|sshd" /var/log/
