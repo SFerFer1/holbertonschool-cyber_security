@@ -1,2 +1,2 @@
 #!/bin/bash
-grep -Ei "useradd|adduser" auth.log | awk '{print $NF}'
+grep -Eo "for [A-Za-z0-9_-]+" auth.log | awk '{print $2}' | sort -u | paste -sd,
