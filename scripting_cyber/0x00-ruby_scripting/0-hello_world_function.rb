@@ -2,4 +2,3 @@ def say_hello(str)
   puts "Hello, Holberton! from #{str}!"
 end
 
-say_hello("Ruby!")
