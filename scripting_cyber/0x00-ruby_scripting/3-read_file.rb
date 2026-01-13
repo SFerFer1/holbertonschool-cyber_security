@@ -12,6 +12,8 @@ def count_user_ids(path)
     end
     
 
-    counts
+    counts.each do |key, value|
+    puts "#{key}: #{value}"
+    end
 
 end
