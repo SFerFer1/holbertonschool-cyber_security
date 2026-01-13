@@ -3,7 +3,7 @@ class HelloWorld
     @message = "Hello, World!"
   end
 
-  def saludar
+  def print_hello
     puts "Hola, #{@nombre}!"
   end
 end
