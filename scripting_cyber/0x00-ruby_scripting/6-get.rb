@@ -10,5 +10,5 @@ def get_request(url)
   puts
   puts "Response body:"
   puts
-  puts JSON.pretty_generate(JSON.parse(response.body))
+  print JSON.pretty_generate(JSON.parse(response.body))
 end
