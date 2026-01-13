@@ -4,7 +4,7 @@ require 'fileutils'
 
 def download_file
   if ARGV.length != 2
-    puts "Usage: 9-downloadfile.rb URL LOCALFILE_PATH"
+    puts "Usage: 9-download_file.rb URL LOCAL_FILE_PATH"
     return
   end
 
