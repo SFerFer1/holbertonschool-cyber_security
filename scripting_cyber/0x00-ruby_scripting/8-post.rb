@@ -1,17 +1,17 @@
 require 'net/http'
-require 'json'
 require 'uri'
+require 'json'
 
-def post_request(url, body_params)
-  uri = URI(url)
+def post_request(url, body_params = {})
+  uri = URI.parse(url)
 
-  http = Net::HTTP.new(uri.host, uri.port)
-  http.use_ssl = (uri.scheme == "https")
+  request = Net::HTTP::Post.new(uri)
+  request.content_type = 'application/json'
+  request.body = body_params.to_json unless body_params.empty?
 
-  request = Net::HTTP::Post.new(uri.path, { 'Content-Type' => 'application/json' })
-  request.body = body_params.to_json
-
-  response = http.request(request)
+  response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
+    http.request(request)
+  end
 
   puts "Response status: #{response.code} #{response.message}"
   puts "Response body:"
