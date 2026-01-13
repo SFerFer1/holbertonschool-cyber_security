@@ -47,6 +47,7 @@ if options[:list]
 end
 
 
+
 if options[:remove]
   tasks = File.readlines(TASKS_FILE).map(&:chomp)
   index = options[:remove] - 1
