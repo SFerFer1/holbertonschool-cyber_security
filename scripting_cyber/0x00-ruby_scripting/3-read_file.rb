@@ -4,12 +4,13 @@ def count_user_ids(path)
 content = File.read(path)
 data = JSON.parse(content)
 
-count = 0
+  counts = Hash.new(0)
 
-data.each do |i|
-  count += 1 if i.key?("userId")
+  data.each do |item|
+    user_id = item["userId"]
+    counts[user_id] += 1
+  end
+
+  counts
 end
 
-return count
-
-end
