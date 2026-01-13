@@ -11,6 +11,8 @@ data = JSON.parse(content)
     counts[user_id] += 1
   end
 
-  counts
+ counts.each do |key, value|
+  puts "#{key}: #{value}"
 end
+
 
