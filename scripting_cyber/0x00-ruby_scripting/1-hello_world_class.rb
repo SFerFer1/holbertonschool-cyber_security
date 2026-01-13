@@ -4,7 +4,7 @@ class HelloWorld
   end
 
   def print_hello
-    puts "#{@message}!"
+    puts "#{@message}"
   end
 end
 
