@@ -43,8 +43,11 @@ if options[:list]
   tasks = File.readlines(TASKS_FILE).map(&:chomp)
   puts "Tasks:"
   puts
-  tasks.each { |task| puts task }
+  tasks.each_with_index do |task, index|
+    puts "#{index + 1}. #{task}"
+  end
 end
+
 
 
 
