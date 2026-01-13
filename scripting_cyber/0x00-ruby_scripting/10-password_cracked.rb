@@ -2,7 +2,7 @@ require 'digest'
 
 def crack_password
   if ARGV.length != 2
-    puts "Usage: 10-passwordcracked.rb HASHEDPASSWORD DICTIONARY_FILE"
+    puts "Usage: 10-password_cracked.rb HASHED_PASSWORD DICTIONARY_FILE"
     return
   end
 
