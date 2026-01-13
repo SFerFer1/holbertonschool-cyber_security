@@ -9,7 +9,7 @@ data = JSON.parse(content)
   data.each do |item|
     user_id = item["userId"]
     counts[user_id] += 1
-  end
+ 
 
  counts.each do |key, value|
   puts "#{key}: #{value}"
