@@ -41,8 +41,11 @@ end
 
 if options[:list]
   tasks = File.readlines(TASKS_FILE).map(&:chomp)
+  puts "Tasks:"
+  puts
   tasks.each { |task| puts task }
 end
+
 
 if options[:remove]
   tasks = File.readlines(TASKS_FILE).map(&:chomp)
