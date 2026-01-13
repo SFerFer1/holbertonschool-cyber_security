@@ -9,6 +9,6 @@ def get_request(url)
   puts "Response status: #{response.code} #{response.message}"
   puts
   puts "Response body:"
-  puts
+
   print JSON.pretty_generate(JSON.parse(response.body)).chomp
 end
