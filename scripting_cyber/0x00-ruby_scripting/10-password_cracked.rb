@@ -6,14 +6,14 @@ def crack_password
     return
   end
 
-  target_hash = ARGV[0]
+  hashed_password = ARGV[0]
   dictionary_file = ARGV[1]
 
   File.foreach(dictionary_file) do |line|
     word = line.strip
     hashed_word = Digest::SHA256.hexdigest(word)
 
-    if hashed_word == target_hash
+    if hashed_word == hashed_password
       puts "Password found: #{word}"
       return
     end
